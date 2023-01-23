@@ -1,6 +1,7 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { LoggerMiddleware } from './logger/logger.middleware';
 import { CatsModule } from './cats/cats.module';
 import { CatsService } from './cats/cats.service';
 
@@ -12,4 +13,10 @@ import { CatsService } from './cats/cats.service';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    // 소비자에게 loggerMiddleware 을 적용한다는 의미
+    // consumer.apply(LoggerMiddleware).forRoutes('cats'); // 특정 모듈
+    consumer.apply(LoggerMiddleware).forRoutes('*'); // 전체 모듈
+  }
+}
